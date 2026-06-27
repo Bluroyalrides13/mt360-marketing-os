@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MT360 Marketing OS</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-light: #152238;
+    --navy-mid: #1e3a5f;
+    --gold: #d4af37;
+    --gold-light: #e8c84a;
+    --gold-dim: #a88a25;
+    --white: #ffffff;
+    --off-white: #f8f6f1;
+    --gray-100: #f0ede6;
+    --gray-200: #ddd9d0;
+    --gray-400: #9a9690;
+    --gray-600: #5a5750;
+    --text: #1a1714;
+    --text-muted: #5a5750;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; }
+
+  /* HEADER */
+  .header { background: var(--navy); border-bottom: 1px solid var(--navy-mid); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 36px; height: 36px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: var(--navy); letter-spacing: -0.5px; }
+  .logo-text { font-size: 16px; font-weight: 700; color: var(--white); }
+  .logo-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+  .status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-400); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+  /* LAYOUT */
+  .layout { display: flex; height: calc(100vh - 65px); }
+  .sidebar { width: 260px; min-width: 260px; background: var(--navy-light); border-right: 1px solid var(--navy-mid); overflow-y: auto; padding: 16px 12px; }
+  .main { flex: 1; overflow-y: auto; padding: 24px; background: #0d1e35; }
+
+  /* SIDEBAR */
+  .sidebar-label { font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; padding: 4px 8px 8px; }
+  .agent-btn { width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 2px; transition: background .15s; }
+  .agent-btn:hover { background: var(--navy-mid); }
+  .agent-btn.active { background: var(--navy-mid); border-left: 3px solid var(--gold); }
+  .agent-icon { font-size: 18px; width: 28px; text-align: center; flex-shrink: 0; }
+  .agent-info { flex: 1; min-width: 0; }
+  .agent-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .agent-role { font-size: 11px; color: var(--gray-400); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; flex-shrink: 0; }
+  .bc { background: rgba(212,175,55,.15); color: var(--gold); }
+  .bv { background: rgba(29,158,117,.15); color: #4ade80; }
+  .bp { background: rgba(216,90,48,.15); color: #fb923c; }
+  .bd { background: rgba(186,117,23,.15); color: #fbbf24; }
+  .divider { border: none; border-top: 1px solid var(--navy-mid); margin: 12px 0; }
+
+  /* BRAND CONTEXT */
+  .brand-card { background: var(--navy); border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 12px; }
+  .brand-card-title { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+  .brand-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .brand-key { font-size: 11px; color: var(--gray-400); }
+  .brand-val { font-size: 11px; color: var(--white); font-weight: 500; text-align: right; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* MAIN AREA */
+  .welcome { text-align: center; padding: 60px 20px; }
+  .welcome h1 { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+  .welcome h1 span { color: var(--gold); }
+  .welcome p { font-size: 15px; color: var(--gray-400); max-width: 480px; margin: 0 auto 24px; line-height: 1.6; }
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; max-width: 700px; margin: 0 auto; }
+  .agent-tile { background: var(--navy-light); border: 1px solid var(--navy-mid); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: border-color .15s, transform .1s; text-align: center; }
+  .agent-tile:hover { border-color: var(--gold-dim); transform: translateY(-2px); }
+  .tile-icon { font-size: 28px; margin-bottom: 8px; }
+  .tile-name { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+  .tile-role { font-size: 11px; color: var(--gray-400); }
+
+  /* WORKSPACE */
+  .workspace { display: none; }
+  .workspace.visible { display: block; }
+  .ws-header { margin-bottom: 20px; }
+  .ws-title { font-size: 22px; font-weight: 800; color: var(--white); display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .ws-title .icon { font-size: 24px; }
+  .ws-desc { font-size: 14px; color: var(--gray-400); }
+
+  /* LANG TOGGLE */
+  .lang-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+  .lang-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--navy-mid); background: none; color: var(--gray-400); font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: inherit; }
+  .lang-btn.active { background: var(--gold); border-color: var(--gold); color: var(--navy); }
+
+  /* PROMPT CHIPS */
+  .chips-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--navy-mid); background: var(--navy-light); color: var(--gray-400); font-size: 12px; cursor: pointer; transition: all .12s; font-family: inherit; }
+  .chip:hover, .chip.sel { background: rgba(212,175,55,.1); border-color: var(--gold-dim); color: var(--gold); }
+
+  /* INPUT */
+  .input-box { background: var(--navy-light); border: 1px solid var(--navy-mid); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+  .input-box label { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; display: block; margin-bottom: 8px; }
+  .prompt-ta { width: 100%; background: var(--navy); border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 12px; color: var(--white); font-size: 14px; font-family: inherit; resize: vertical; min-height: 110px; line-height: 1.5; }
+  .prompt-ta:focus { outline: none; border-color: var(--gold-dim); }
+  .btn-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; }
+  .btn-generate { background: var(--gold); color: var(--navy); border: none; border-radius: var(--radius-sm); padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .15s; display: flex; align-items: center; gap: 6px; }
+  .btn-generate:hover { background: var(--gold-light); }
+  .btn-generate:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-clear { background: none; border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--gray-400); cursor: pointer; font-family: inherit; }
+  .btn-clear:hover { border-color: var(--gray-400); color: var(--white); }
+
+  /* OUTPUT */
+  .output-panel { background: var(--navy-light); border: 1px solid var(--navy-mid); border-radius: var(--radius); overflow: hidden; display: none; }
+  .output-panel.visible { display: block; }
+  .output-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--navy-mid); }
+  .output-label { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .6px; }
+  .copy-btn { background: none; border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 12px; color: var(--gray-400); cursor: pointer; font-family: inherit; transition: all .12s; display: flex; align-items: center; gap: 5px; }
+  .copy-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .output-body { padding: 16px; font-size: 14px; line-height: 1.7; color: var(--white); white-space: pre-wrap; min-height: 80px; }
+  .loading { display: flex; align-items: center; gap: 8px; color: var(--gray-400); font-size: 13px; padding: 20px 16px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--navy-mid); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* IMAGE PROMPT SECTION */
+  .img-panel { margin-top: 16px; background: var(--navy-light); border: 1px solid var(--navy-mid); border-radius: var(--radius); overflow: hidden; display: none; }
+  .img-panel.visible { display: block; }
+  .img-panel-header { padding: 12px 16px; border-bottom: 1px solid var(--navy-mid); display: flex; align-items: center; justify-content: space-between; }
+  .img-panel-title { font-size: 11px; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: .6px; }
+  .tools-row { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 16px; border-bottom: 1px solid var(--navy-mid); }
+  .tool-chip { padding: 5px 10px; border-radius: 20px; background: var(--navy); border: 1px solid var(--navy-mid); font-size: 11px; color: var(--gray-400); cursor: pointer; font-family: inherit; transition: all .12s; display: flex; align-items: center; gap: 4px; }
+  .tool-chip.active { background: rgba(74,222,128,.1); border-color: #4ade80; color: #4ade80; }
+  .img-prompts { padding: 14px 16px; display: grid; gap: 10px; }
+  .img-prompt-card { background: var(--navy); border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .ipc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .ipc-label { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .5px; }
+  .ipc-copy { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 11px; font-family: inherit; padding: 2px 6px; border-radius: 4px; }
+  .ipc-copy:hover { color: var(--white); }
+  .ipc-text { font-size: 13px; color: var(--white); line-height: 1.5; }
+
+  /* PROMPT LIBRARY */
+  .library-section { margin-top: 20px; }
+  .lib-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .lib-title { font-size: 14px; font-weight: 700; color: var(--white); }
+  .lib-clear { background: none; border: none; color: var(--gray-400); font-size: 12px; cursor: pointer; font-family: inherit; }
+  .lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  .lib-card { background: var(--navy-light); border: 1px solid var(--navy-mid); border-radius: var(--radius-sm); padding: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .lib-card-text { font-size: 12px; color: var(--gray-400); line-height: 1.4; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .lib-card-btns { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+  .lib-btn { background: none; border: 1px solid var(--navy-mid); border-radius: 4px; padding: 3px 7px; font-size: 10px; color: var(--gray-400); cursor: pointer; font-family: inherit; }
+  .lib-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .empty-lib { text-align: center; padding: 20px; color: var(--gray-400); font-size: 13px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--navy-mid); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">MT<br>360</div>
+    <div>
+      <div class="logo-text">Marketing OS</div>
+      <div class="logo-sub">MultiTasking360 · AI Team</div>
+    </div>
+  </div>
+  <div class="status">
+    <div class="status-dot"></div>
+    10 agents online
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="brand-card">
+      <div class="brand-card-title">Brand Context</div>
+      <div class="brand-row"><span class="brand-key">Brand</span><span class="brand-val">MultiTasking360</span></div>
+      <div class="brand-row"><span class="brand-key">Niche</span><span class="brand-val">Entrepreneurs</span></div>
+      <div class="brand-row"><span class="brand-key">CTA 1</span><span class="brand-val">DM me MULTITASK</span></div>
+      <div class="brand-row"><span class="brand-key">CTA 2</span><span class="brand-val">DM me INCOME</span></div>
+      <div class="brand-row"><span class="brand-key">IG</span><span class="brand-val">@multitask360</span></div>
+      <div class="brand-row"><span class="brand-key">Lang</span><span class="brand-val">EN + ES</span></div>
+    </div>
+
+    <div class="sidebar-label">Content Agents</div>
+    <button class="agent-btn" onclick="openAgent('strategist')">
+      <span class="agent-icon">📅</span>
+      <div class="agent-info"><div class="agent-name">Content Strategist</div><div class="agent-role">Weekly content plans</div></div>
+      <span class="badge bc">Plan</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('instagram')">
+      <span class="agent-icon">📸</span>
+      <div class="agent-info"><div class="agent-name">Instagram Expert</div><div class="agent-role">Posts · captions · hashtags</div></div>
+      <span class="badge bc">IG</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('reel')">
+      <span class="agent-icon">🎬</span>
+      <div class="agent-info"><div class="agent-name">Reel Writer</div><div class="agent-role">30–60 sec scripts</div></div>
+      <span class="badge bv">Video</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('carousel')">
+      <span class="agent-icon">🃏</span>
+      <div class="agent-info"><div class="agent-name">Carousel Builder</div><div class="agent-role">Swipe post frameworks</div></div>
+      <span class="badge bc">Swipe</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('story')">
+      <span class="agent-icon">⭕</span>
+      <div class="agent-info"><div class="agent-name">Story Creator</div><div class="agent-role">Daily Stories sequences</div></div>
+      <span class="badge bc">Story</span>
+    </button>
+    <hr class="divider">
+    <div class="sidebar-label">Sales Agents</div>
+    <button class="agent-btn" onclick="openAgent('leadmagnet')">
+      <span class="agent-icon">🎁</span>
+      <div class="agent-info"><div class="agent-name">Lead Magnet Expert</div><div class="agent-role">Hidden Income Finder</div></div>
+      <span class="badge bp">Leads</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('sales')">
+      <span class="agent-icon">✍️</span>
+      <div class="agent-info"><div class="agent-name">Sales Copywriter</div><div class="agent-role">Product pages · emails</div></div>
+      <span class="badge bp">Copy</span>
+    </button>
+    <hr class="divider">
+    <div class="sidebar-label">Visual Agents</div>
+    <button class="agent-btn" onclick="openAgent('imageprompt')">
+      <span class="agent-icon">🖼️</span>
+      <div class="agent-info"><div class="agent-name">Image Prompt Creator</div><div class="agent-role">Prompts for Art Agent AI</div></div>
+      <span class="badge bv">Visual</span>
+    </button>
+    <button class="agent-btn" onclick="openAgent('videoprompt')">
+      <span class="agent-icon">🎥</span>
+      <div class="agent-info"><div class="agent-name">Video Prompt Creator</div><div class="agent-role">BigMotion · Zeely prompts</div></div>
+      <span class="badge bv">Video</span>
+    </button>
+    <hr class="divider">
+    <div class="sidebar-label">Strategy Agents</div>
+    <button class="agent-btn" onclick="openAgent('analytics')">
+      <span class="agent-icon">📊</span>
+      <div class="agent-info"><div class="agent-name">Analytics Coach</div><div class="agent-role">Performance · next steps</div></div>
+      <span class="badge bd">Data</span>
+    </button>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+
+    <!-- WELCOME -->
+    <div id="welcome">
+      <div class="welcome">
+        <h1>Your MT360 <span>AI Marketing Team</span></h1>
+        <p>10 specialized agents — each briefed on your brand, offers, voice, and CTAs. Pick an agent from the sidebar or click below to get started.</p>
+        <div class="agent-grid">
+          <div class="agent-tile" onclick="openAgent('strategist')"><div class="tile-icon">📅</div><div class="tile-name">Content Strategist</div><div class="tile-role">Plan your week</div></div>
+          <div class="agent-tile" onclick="openAgent('instagram')"><div class="tile-icon">📸</div><div class="tile-name">Instagram Expert</div><div class="tile-role">Captions & hashtags</div></div>
+          <div class="agent-tile" onclick="openAgent('reel')"><div class="tile-icon">🎬</div><div class="tile-name">Reel Writer</div><div class="tile-role">30–60 sec scripts</div></div>
+          <div class="agent-tile" onclick="openAgent('carousel')"><div class="tile-icon">🃏</div><div class="tile-name">Carousel Builder</div><div class="tile-role">Swipe posts</div></div>
+          <div class="agent-tile" onclick="openAgent('imageprompt')"><div class="tile-icon">🖼️</div><div class="tile-name">Image Prompts</div><div class="tile-role">Art Agent AI ready</div></div>
+          <div class="agent-tile" onclick="openAgent('analytics')"><div class="tile-icon">📊</div><div class="tile-name">Analytics Coach</div><div class="tile-role">What to post next</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace" id="workspace">
+      <div class="ws-header">
+        <div class="ws-title"><span class="icon" id="wsIcon"></span><span id="wsName"></span></div>
+        <div class="ws-desc" id="wsDesc"></div>
+      </div>
+
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇺🇸 English</button>
+        <button class="lang-btn" id="btn-es" onclick="setLang('es')">🇲🇽 Español</button>
+      </div>
+
+      <div class="chips-label">Quick prompts</div>
+      <div class="chips" id="chips"></div>
+
+      <div class="input-box">
+        <label>Your request</label>
+        <textarea class="prompt-ta" id="promptInput" rows="5"></textarea>
+        <div class="btn-row">
+          <button class="btn-generate" id="genBtn" onclick="generate()">▶ Generate</button>
+          <button class="btn-clear" onclick="clearOutput()">Clear</button>
+          <button class="btn-clear" onclick="saveToLibrary()" id="saveBtn" style="display:none">⭐ Save prompt</button>
+        </div>
+      </div>
+
+      <div class="output-panel" id="outputPanel">
+        <div class="output-header">
+          <span class="output-label" id="outputLabel">Output</span>
+          <button class="copy-btn" onclick="copyOutput()">📋 Copy all</button>
+        </div>
+        <div class="output-body" id="outputBody"></div>
+      </div>
+
+      <!-- IMAGE PROMPT PANEL (only for imageprompt agent) -->
+      <div class="img-panel" id="imgPanel">
+        <div class="img-panel-header">
+          <span class="img-panel-title">🖼️ Image prompts — ready to paste</span>
+          <span style="font-size:11px;color:var(--gray-400)">Choose your tool below</span>
+        </div>
+        <div class="tools-row">
+          <button class="tool-chip active" onclick="selectTool(this,'Art Agent AI')">🎨 Art Agent AI</button>
+          <button class="tool-chip" onclick="selectTool(this,'Adobe Firefly')">🔥 Adobe Firefly</button>
+          <button class="tool-chip" onclick="selectTool(this,'Canva AI')">✏️ Canva AI</button>
+          <button class="tool-chip" onclick="selectTool(this,'Leonardo.ai')">🦁 Leonardo.ai</button>
+          <button class="tool-chip" onclick="selectTool(this,'Ideogram')">💬 Ideogram</button>
+        </div>
+        <div class="img-prompts" id="imgPrompts"></div>
+      </div>
+
+      <!-- PROMPT LIBRARY -->
+      <div class="library-section" id="librarySection">
+        <div class="lib-header">
+          <span class="lib-title">⭐ Saved prompts</span>
+          <button class="lib-clear" onclick="clearLibrary()">Clear all</button>
+        </div>
+        <div id="libraryGrid"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const AGENTS = {
+  strategist: {
+    icon:'📅', name:'Content Strategist', desc:'Weekly content plans & calendars',
+    badge:'bc', bl:'Plan',
+    prompts:['Plan my week','30-day calendar','Content pillars','Repurpose strategy','Trending topics for entrepreneurs'],
+    tpl:'Plan a 7-day Instagram content calendar for MultiTasking360. Audience: aspiring multi-passionate entrepreneurs. Include post type, topic, and goal for each day. Bold and action-oriented.',
+    isImage: false
+  },
+  instagram: {
+    icon:'📸', name:'Instagram Expert', desc:'Posts · captions · hashtags · CTAs',
+    prompts:['Write a caption','Hashtag set (30)','Bio rewrite','Launch post','Engagement post'],
+    tpl:'Write an Instagram caption for MultiTasking360. Topic: [your topic here]. Include a scroll-stopping hook, value, CTA ("DM me MULTITASK" or "link in bio"), and 15 targeted hashtags. Tone: bold, empowering, entrepreneurial.',
+    isImage: false
+  },
+  reel: {
+    icon:'🎬', name:'Reel Writer', desc:'30–60 second scripts',
+    prompts:['45-sec reel script','Hook ideas (10)','Voiceover script','Trending sound concept','Talking-head script'],
+    tpl:'Write a 45-second Instagram Reel script for MultiTasking360. Topic: [your topic]. Format: hook (0-5s) → problem (5-15s) → solution (15-35s) → CTA (35-45s). High energy, speak directly to aspiring entrepreneurs.',
+    isImage: false
+  },
+  carousel: {
+    icon:'🃏', name:'Carousel Builder', desc:'Swipe post frameworks',
+    prompts:['7-slide carousel','Educational swipe','Product carousel','Story-based swipe','List carousel'],
+    tpl:'Create a 7-slide Instagram carousel for MultiTasking360. Topic: [your topic]. Slide 1 = bold hook. Slides 2-6 = punchy value points. Slide 7 = CTA. Give a slide title and 1-2 sentence body per slide.',
+    isImage: false
+  },
+  story: {
+    icon:'⭕', name:'Story Creator', desc:'Daily Stories sequences',
+    prompts:['5-story sequence','Poll story','Behind-the-scenes','Countdown story','Q&A story'],
+    tpl:'Create a 5-frame Instagram Story sequence for MultiTasking360. Goal: [awareness / sales / engagement]. Include story type (text/poll/question box/countdown), copy, and sticker suggestion per frame. Casual and authentic.',
+    isImage: false
+  },
+  leadmagnet: {
+    icon:'🎁', name:'Lead Magnet Expert', desc:'Promotes Hidden Income Finder',
+    prompts:['Hidden Income post','Freebie caption','DM script for leads','Opt-in email','Story opt-in sequence'],
+    tpl:'Write an Instagram post promoting the MT360 Hidden Income Finder free resource. Hook: they have untapped income streams they are not using. CTA: "DM me INCOME to get yours free." Under 150 words, punchy and curiosity-driven.',
+    isImage: false
+  },
+  sales: {
+    icon:'✍️', name:'Sales Copywriter', desc:'Product pages · emails · launch copy',
+    prompts:['Sales email','Launch post','Product description','Objection handler','Urgency close'],
+    tpl:'Write a short-form sales email for MultiTasking360 [tier or product]. Subject line + 3 paragraphs: open with pain point, present MT360 as the solution, close with urgency CTA. Tone: confident, warm, entrepreneurial.',
+    isImage: false
+  },
+  imageprompt: {
+    icon:'🖼️', name:'Image Prompt Creator', desc:'Prompts for Art Agent AI · Firefly · Canva · Leonardo · Ideogram',
+    prompts:['Brand lifestyle prompt','Reel thumbnail prompt','Product mockup prompt','Quote graphic prompt','Behind-the-scenes prompt'],
+    tpl:'Generate 3 image prompts for [Art Agent AI / your tool] to create Instagram visuals for MultiTasking360. Post topic: [your topic]. Style: modern, bold, entrepreneurial. Brand colors: navy #0a1628 + gold #d4af37. Each prompt: 2-3 sentences covering scene, mood, lighting, composition. Label each Prompt 1, Prompt 2, Prompt 3.',
+    isImage: true
+  },
+  videoprompt: {
+    icon:'🎥', name:'Video Prompt Creator', desc:'Prompts for BigMotion · Zeely',
+    prompts:['15-sec promo prompt','Reel B-roll prompt','Ad video prompt','Story animation prompt','Product reveal prompt'],
+    tpl:'Generate a video prompt for BigMotion or Zeely. Create a 15-second promo for MultiTasking360. Describe: opening shot, middle action, closing frame, text overlays, music mood, and pacing. Brand aesthetic: polished, high-energy, entrepreneur lifestyle.',
+    isImage: false
+  },
+  analytics: {
+    icon:'📊', name:'Analytics Coach', desc:'Reviews performance · recommends next steps',
+    prompts:['What to post next','Improve my reach','Content that converts','Best time to post','Hashtag strategy audit'],
+    tpl:'Act as my Instagram analytics coach for MultiTasking360. Based on entrepreneur-niche benchmarks: (1) which content types drive the most reach and saves, (2) best posting times for EST, (3) what to post this week to grow. Give 3 specific action steps I can do today.',
+    isImage: false
+  }
+};
+
+let currentAgent = null;
+let currentLang = 'en';
+let currentTool = 'Art Agent AI';
+let library = JSON.parse(localStorage.getItem('mt360_library') || '[]');
+
+function openAgent(id) {
+  currentAgent = id;
+  const a = AGENTS[id];
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('workspace').classList.add('visible');
+  document.querySelectorAll('.agent-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.agent-btn[onclick="openAgent('${id}')"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('wsIcon').textContent = a.icon;
+  document.getElementById('wsName').textContent = a.name;
+  document.getElementById('wsDesc').textContent = a.desc;
+  document.getElementById('promptInput').value = a.tpl + (currentLang === 'es' ? '\n\n(Responde en español)' : '');
+  document.getElementById('outputPanel').classList.remove('visible');
+  document.getElementById('imgPanel').style.display = a.isImage ? 'block' : 'none';
+  document.getElementById('saveBtn').style.display = 'none';
+  renderChips(a.prompts);
+  renderLibrary();
+}
+
+function renderChips(prompts) {
+  document.getElementById('chips').innerHTML = prompts.map(p =>
+    `<button class="chip" onclick="fillChip(this,'${p.replace(/'/g,"&#39;")}')">${p}</button>`
+  ).join('');
+}
+
+function fillChip(el, txt) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const a = AGENTS[currentAgent];
+  document.getElementById('promptInput').value = txt + ' — for MultiTasking360' + (currentLang === 'es' ? ' (en español)' : '');
+}
+
+function setLang(l) {
+  currentLang = l;
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-es').classList.toggle('active', l === 'es');
+  if (currentAgent) openAgent(currentAgent);
+}
+
+function selectTool(el, tool) {
+  currentTool = tool;
+  document.querySelectorAll('.tool-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const existing = document.getElementById('imgPrompts').innerHTML;
+  if (existing) {
+    document.querySelectorAll('.ipc-label').forEach(l => l.textContent = tool + ' — Prompt ' + (parseInt(l.textContent.split('Prompt')[1])||''));
+  }
+}
+
+async function generate() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  if (!prompt) return;
+  const a = AGENTS[currentAgent];
+  const btn = document.getElementById('genBtn');
+  const panel = document.getElementById('outputPanel');
+  const body = document.getElementById('outputBody');
+  const label = document.getElementById('outputLabel');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating...';
+  panel.classList.add('visible');
+  body.innerHTML = '<div class="loading"><div class="spinner"></div>Your ' + a.name + ' is working...</div>';
+  label.textContent = a.name + ' · Output';
+
+  const langNote = currentLang === 'es' ? ' Respond entirely in Spanish.' : '';
+  const system = `You are the ${a.name} agent inside the MultiTasking360 Marketing OS. You are a specialized expert who knows:
+- Brand: MultiTasking360 (MT360) — digital education platform for multi-passionate entrepreneurs
+- Owner: Cindy Murphy, Tampa FL
+- Offers: 7-tier MT360 program + Hidden Income Finder lead magnet + Blu Royal Academy digital products
+- Brand colors: navy #0a1628 + gold #d4af37
+- Voice: bold, empowering, authentic, direct
+- CTAs: "DM me MULTITASK", "DM me INCOME", "link in bio", "Save this post"
+- Instagram: @multitask360
+- Tools for visuals: Art Agent AI, Adobe Firefly, Canva AI, Leonardo.ai, Ideogram, BigMotion, Zeely
+- Bilingual EN/ES when needed
+Produce only the requested output — no preamble, no meta-commentary. Be specific, punchy, copy-paste ready.${langNote}`;
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system, prompt })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const text = data.text || 'No response.';
+    body.textContent = text;
+    document.getElementById('saveBtn').style.display = 'inline-flex';
+    if (a.isImage) parseImagePrompts(text);
+  } catch (e) {
+    body.textContent = '⚠️ Error: ' + e.message + '\n\nMake sure your API key is configured on the server.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '▶ Generate';
+}
+
+function parseImagePrompts(text) {
+  const panel = document.getElementById('imgPanel');
+  const container = document.getElementById('imgPrompts');
+  const prompts = text.split(/Prompt \d+[:\-–]?/i).filter(p => p.trim().length > 20);
+  if (prompts.length === 0) return;
+  container.innerHTML = prompts.slice(0, 3).map((p, i) => `
+    <div class="img-prompt-card">
+      <div class="ipc-top">
+        <span class="ipc-label">${currentTool} — Prompt ${i+1}</span>
+        <button class="ipc-copy" onclick="copyText(this, \`${p.trim().replace(/`/g,'\\`')}\`)">📋 Copy</button>
+      </div>
+      <div class="ipc-text">${p.trim()}</div>
+    </div>`).join('');
+}
+
+function copyOutput() {
+  const text = document.getElementById('outputBody').textContent;
+  copyText(null, text, '📋 Copied!');
+}
+
+function copyText(btn, text, label) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) { const orig = btn.textContent; btn.textContent = '✓'; setTimeout(() => btn.textContent = orig, 1500); }
+  });
+}
+
+function clearOutput() {
+  document.getElementById('outputPanel').classList.remove('visible');
+  document.getElementById('outputBody').textContent = '';
+  document.getElementById('saveBtn').style.display = 'none';
+  if (currentAgent) document.getElementById('promptInput').value = AGENTS[currentAgent].tpl + (currentLang === 'es' ? '\n\n(Responde en español)' : '');
+}
+
+function saveToLibrary() {
+  const prompt = document.getElementById('promptInput').value.trim();
+  const output = document.getElementById('outputBody').textContent.trim();
+  if (!prompt) return;
+  library.unshift({ id: Date.now(), agent: currentAgent, agentName: AGENTS[currentAgent].name, prompt, output: output.slice(0, 200), ts: new Date().toLocaleDateString() });
+  if (library.length > 20) library = library.slice(0, 20);
+  localStorage.setItem('mt360_library', JSON.stringify(library));
+  renderLibrary();
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '✓ Saved!';
+  setTimeout(() => btn.textContent = '⭐ Save prompt', 1500);
+}
+
+function renderLibrary() {
+  const grid = document.getElementById('libraryGrid');
+  if (library.length === 0) {
+    grid.innerHTML = '<div class="empty-lib">No saved prompts yet. Generate content and click ⭐ Save prompt.</div>';
+    return;
+  }
+  grid.innerHTML = '<div class="lib-grid">' + library.map(item => `
+    <div class="lib-card">
+      <div>
+        <div style="font-size:10px;color:var(--gold);margin-bottom:3px;font-weight:700">${item.agentName} · ${item.ts}</div>
+        <div class="lib-card-text">${item.prompt}</div>
+      </div>
+      <div class="lib-card-btns">
+        <button class="lib-btn" onclick="loadFromLibrary(${item.id})">Load</button>
+        <button class="lib-btn" onclick="removeFromLibrary(${item.id})">✕</button>
+      </div>
+    </div>`).join('') + '</div>';
+}
+
+function loadFromLibrary(id) {
+  const item = library.find(i => i.id === id);
+  if (!item) return;
+  openAgent(item.agent);
+  setTimeout(() => { document.getElementById('promptInput').value = item.prompt; }, 50);
+}
+
+function removeFromLibrary(id) {
+  library = library.filter(i => i.id !== id);
+  localStorage.setItem('mt360_library', JSON.stringify(library));
+  renderLibrary();
+}
+
+function clearLibrary() {
+  library = [];
+  localStorage.setItem('mt360_library', JSON.stringify(library));
+  renderLibrary();
+}
+
+renderLibrary();
+</script>
+</body>
+</html>

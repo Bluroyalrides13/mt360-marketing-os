@@ -1,0 +1,15 @@
+{
+  "name": "mt360-marketing-os",
+  "version": "1.0.0",
+  "description": "MultiTasking360 AI Marketing OS — 10 specialized marketing agents",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
